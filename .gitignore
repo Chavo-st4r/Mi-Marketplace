@@ -1,0 +1,16 @@
+# Archivos compilados de Python
+*.pyc
+__pycache__/
+
+# Base de datos local
+db.sqlite3
+
+# Entornos virtuales
+.venv/
+env/
+
+# Configuración sensible
+.env
+
+# Archivos de migraciones (opcional)
+*/migrations/__pycache__/
