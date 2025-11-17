@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="text-center">
+        <h1 class="mb-3">Bienvenido a mi marketplace 🚗</h1>
+        <p class="lead">Explorá los mejores productos del mercado automotor.</p>
+    </div>
+
+    <!-- Sección de productos destacados -->
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <img src="{% static 'img/producto1.jpg' %}" class="card-img-top" alt="Producto 1">
+                <div class="card-body">
+                    <h5 class="card-title">Producto 1</h5>
+                    <p class="card-text">Descripción breve del producto.</p>
+                    <a href="/productos/" class="btn btn-primary">Ver más</a>
+                </div>
+            </div>
+        </div>
+        <!-- ... resto de tarjetas ... -->
+    </div>
+</div>
+{% endblock %}
