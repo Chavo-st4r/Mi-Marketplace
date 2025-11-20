@@ -4,25 +4,73 @@
 {% block title %}Inicio{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="text-center">
-        <h1 class="mb-3">Bienvenido a mi marketplace 🚗</h1>
-        <p class="lead">Explorá los mejores productos del mercado automotor.</p>
+<!-- Hero principal -->
+<section class="bg-dark text-white text-center py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Compra y venta de ropa urbana</h1>
+        <p class="lead">Explorá prendas únicas, publicá las tuyas y encontrá tu estilo.</p>
+        <a href="{% url 'productos' %}" class="btn btn-light btn-lg mt-3">Ver catálogo completo</a>
     </div>
+</section>
 
-    <!-- Sección de productos destacados -->
-    <div class="row mt-5">
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <img src="{% static 'img/producto1.jpg' %}" class="card-img-top" alt="Producto 1">
-                <div class="card-body">
-                    <h5 class="card-title">Producto 1</h5>
-                    <p class="card-text">Descripción breve del producto.</p>
-                    <a href="/productos/" class="btn btn-primary">Ver más</a>
+<!-- Sección de ofertas con carrusel -->
+<section class="container mt-5">
+    <h2 class="text-center mb-4">🔥 Ofertas destacadas</h2>
+    <div id="ofertasCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for producto in productos|slice:":6" %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <div class="d-flex justify-content-center">
+                    <div class="card" style="width: 18rem;">
+                        <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ producto.nombre }}</h5>
+                            <p class="card-text">${{ producto.precio }}</p>
+                            <a href="{% url 'agregar_al_carrito' producto.id %}" class="btn btn-outline-dark">Agregar al carrito</a>
+                        </div>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        <!-- ... resto de tarjetas ... -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#ofertasCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#ofertasCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
     </div>
-</div>
+</section>
+
+<!-- Sección de categorías -->
+<section class="container mt-5">
+    <h2 class="text-center mb-4">Explorá por categoría</h2>
+    <div class="row text-center">
+        <div class="col-md-3 mb-4">
+            <img src="{% static 'img/remera.webp' %}" class="img-fluid rounded mb-2" alt="Remeras">
+            <h5>Remeras</h5>
+        </div>
+        <div class="col-md-3 mb-4">
+            <img src="{% static 'img/pantalones.webp' %}" class="img-fluid rounded mb-2" alt="Pantalones">
+            <h5>Pantalones</h5>
+        </div>
+        <div class="col-md-3 mb-4">
+            <img src="{% static 'img/camperas.webp' %}" class="img-fluid rounded mb-2" alt="Camperas">
+            <h5>Camperas</h5>
+        </div>
+        <div class="col-md-3 mb-4">
+            <img src="{% static 'img/zapatillas.webp' %}" class="img-fluid rounded mb-2" alt="Zapatillas">
+            <h5>Zapatillas</h5>
+        </div>
+    </div>
+</section>
+
+<!-- CTA final -->
+<section class="bg-light py-5 mt-5">
+    <div class="container text-center">
+        <h3 class="mb-3">¿Tenés prendas para vender?</h3>
+        <p>Publicá tu producto y empezá a vender hoy mismo.</p>
+        <a href="{% url 'publicar_producto' %}" class="btn btn-dark">Publicar prenda</a>
+    </div>
+</section>
 {% endblock %}
