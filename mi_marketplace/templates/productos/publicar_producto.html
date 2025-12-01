@@ -1,10 +1,32 @@
 {% extends "base.html" %}
-{% block content %}
-<h2>Publicar prenda</h2>
+{% load static %}
+{% block title %}Publicar prenda{% endblock %}
 
-<form method="post" enctype="multipart/form-data" class="mt-3">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-success">Publicar</button>
-</form>
+{% block content %}
+<section class="container py-5">
+  <div class="row">
+    <!-- Formulario principal -->
+    <div class="col-md-8">
+      <h2 class="mb-4">📦 Publicar prenda</h2>
+      <form method="post" enctype="multipart/form-data" class="shadow-sm p-4 bg-white rounded">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-dark w-100 mt-3">Publicar</button>
+      </form>
+    </div>
+
+    <!-- Sidebar visual -->
+    <div class="col-md-4 d-none d-md-block">
+      <div class="bg-light p-4 rounded shadow-sm">
+        <h5 class="mb-3">🧥 ¿Qué podés publicar?</h5>
+        <ul class="list-unstyled">
+          <li>✔ Remeras, pantalones, camperas</li>
+          <li>✔ Zapatillas y accesorios</li>
+          <li>✔ Prendas nuevas o usadas</li>
+        </ul>
+        <img src="{% static 'img/publicar_banner.webp' %}" class="img-fluid rounded mt-3" alt="Publicar ropa">
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}

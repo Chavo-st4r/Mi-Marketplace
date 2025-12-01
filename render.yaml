@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: mi-marketplace
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn mi_marketplace.wsgi:application"
+    autoDeploy: true
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: mi_marketplace.settings
+      - key: SECRET_KEY
+        value: django-insecure-c(l1_cvt+n4n-7&yyl9b+%#6-qr46#b4ho7l8v_ia*8+024oi5
+      - key: MP_ACCESS_TOKEN
+        value: TU_TOKEN_DE_MERCADO_PAGO

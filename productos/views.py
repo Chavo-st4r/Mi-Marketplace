@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-
 # Simulación básica de carrito en sesión
 @login_required
 def agregar_al_carrito(request, producto_id):
@@ -28,11 +27,6 @@ def productos_view(request):
     productos = Producto.objects.all()
     carrito_ids = request.session.get('carrito', [])
     carrito_productos = Producto.objects.filter(id__in=carrito_ids)
-    return render(request, 'productos/productos.html', {
-        'productos': productos,
-        'carrito_productos': carrito_productos,
-    })
-
 
     # Filtros GET
     nombre = request.GET.get('nombre')
@@ -48,9 +42,15 @@ def productos_view(request):
     if categoria:
         productos = productos.filter(categoria__iexact=categoria)
     if precio_min:
-        productos = productos.filter(precio__gte=precio_min)
+        try:
+            productos = productos.filter(precio__gte=float(precio_min))
+        except ValueError:
+            pass
     if precio_max:
-        productos = productos.filter(precio__lte=precio_max)
+        try:
+            productos = productos.filter(precio__lte=float(precio_max))
+        except ValueError:
+            pass
     if talle:
         productos = productos.filter(talle__iexact=talle)
     if color:
@@ -60,8 +60,10 @@ def productos_view(request):
     elif orden == 'desc':
         productos = productos.order_by('-precio')
 
-    return render(request, 'productos/productos.html', {'productos': productos})
-
+    return render(request, 'productos/productos.html', {
+        'productos': productos,
+        'carrito_productos': carrito_productos,
+    })
 
 def publicar_producto(request):
     if request.method == 'POST':
@@ -74,4 +76,3 @@ def publicar_producto(request):
     else:
         form = ProductoForm()
     return render(request, 'productos/publicar_producto.html', {'form': form})
-
