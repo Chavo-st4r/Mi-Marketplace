@@ -6,6 +6,8 @@ from django.http import HttpResponse
 from django.utils.crypto import get_random_string
 from reportlab.pdfgen import canvas
 from io import BytesIO
+import mercadopago
+from django.conf import settings
 
 # Simulación básica de carrito en sesión
 @login_required
@@ -33,35 +35,102 @@ def confirmar_compra(request):
     productos = Producto.objects.filter(id__in=carrito_ids)
 
     if request.method == 'POST':
-        numero_compra = get_random_string(length=8).upper()
         direccion = request.POST.get('direccion')
         metodo_pago = request.POST.get('metodo_pago')
 
-        # Limpiar carrito
-        request.session['carrito'] = []
+        if metodo_pago == "mercado_pago":
+            # Flujo con Mercado Pago
+            sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+            total = sum(p.precio for p in productos)
 
-        # Generar PDF
-        buffer = BytesIO()
-        p = canvas.Canvas(buffer)
-        p.setFont("Helvetica", 12)
-        p.drawString(100, 800, f"Ticket de compra - Nº {numero_compra}")
-        p.drawString(100, 780, f"Dirección: {direccion}")
-        p.drawString(100, 760, f"Método de pago: {metodo_pago}")
-        y = 740
-        for producto in productos:
-            p.drawString(100, y, f"{producto.nombre} - ${producto.precio}")
-            y -= 20
-        p.drawString(100, y - 20, "Gracias por tu compra en Mi Marketplace.")
-        p.showPage()
-        p.save()
-        buffer.seek(0)
+            preference_data = {
+                "items": [
+                    {
+                        "title": "Compra en Mi Marketplace",
+                        "quantity": 1,
+                        "unit_price": float(total),
+                        "currency_id": "ARS"
+                    }
+                ],
+                "back_urls": {
+                    "success": "https://mi-marketplace.onrender.com/pago/exitoso/",
+                    "failure": "https://mi-marketplace.onrender.com/pago/fallido/",
+                    "pending": "https://mi-marketplace.onrender.com/pago/pendiente/"
+                },
+                "auto_return": "approved"
+            }
 
-        # Guardar PDF en sesión como hex para descarga
-        request.session['ticket_pdf'] = buffer.getvalue().hex()
-        request.session['compra_exitosa'] = numero_compra
+            preference_response = sdk.preference().create(preference_data)
+            preference = preference_response["response"]
+            return redirect(preference["init_point"])
 
-        return redirect('ver_carrito')
+        else:
+            # Flujo normal con PDF
+            numero_compra = get_random_string(length=8).upper()
 
+            # Limpiar carrito
+            request.session['carrito'] = []
+
+            # Generar PDF
+            buffer = BytesIO()
+            p = canvas.Canvas(buffer)
+            p.setFont("Helvetica", 12)
+            p.drawString(100, 800, f"Ticket de compra - Nº {numero_compra}")
+            p.drawString(100, 780, f"Dirección: {direccion}")
+            p.drawString(100, 760, f"Método de pago: {metodo_pago}")
+            y = 740
+            for producto in productos:
+                p.drawString(100, y, f"{producto.nombre} - ${producto.precio}")
+                y -= 20
+            p.drawString(100, y - 20, "Gracias por tu compra en Mi Marketplace.")
+            p.showPage()
+            p.save()
+            buffer.seek(0)
+
+            # Guardar PDF en sesión como hex para descarga
+            request.session['ticket_pdf'] = buffer.getvalue().hex()
+            request.session['compra_exitosa'] = numero_compra
+
+            return redirect('ver_carrito')
+
+    return redirect('ver_carrito')
+
+@login_required
+def pago_exitoso(request):
+    # Generar ticket al volver de Mercado Pago
+    carrito_ids = request.session.get('carrito', [])
+    productos = Producto.objects.filter(id__in=carrito_ids)
+    numero_compra = get_random_string(length=8).upper()
+
+    # Limpiar carrito
+    request.session['carrito'] = []
+
+    # Generar PDF
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer)
+    p.setFont("Helvetica", 12)
+    p.drawString(100, 800, f"Ticket de compra - Nº {numero_compra}")
+    p.drawString(100, 780, "Método de pago: Mercado Pago")
+    y = 760
+    for producto in productos:
+        p.drawString(100, y, f"{producto.nombre} - ${producto.precio}")
+        y -= 20
+    p.drawString(100, y - 20, "Gracias por tu compra en Mi Marketplace.")
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+
+    request.session['ticket_pdf'] = buffer.getvalue().hex()
+    request.session['compra_exitosa'] = numero_compra
+
+    return redirect('ver_carrito')
+
+@login_required
+def pago_fallido(request):
+    return redirect('ver_carrito')
+
+@login_required
+def pago_pendiente(request):
     return redirect('ver_carrito')
 
 @login_required

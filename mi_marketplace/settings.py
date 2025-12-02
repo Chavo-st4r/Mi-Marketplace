@@ -126,3 +126,4 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ]
 }
+MERCADOPAGO_ACCESS_TOKEN = 'APP_USR-3176187087180752-120116-f361ae4d76f1d23b5459c36ccd45e19c-471270508'

@@ -10,4 +10,9 @@ urlpatterns = [
     path('confirmar-compra/', views.confirmar_compra, name='confirmar_compra'),  # confirmar compra y emitir ticket
     path('carrito/ticket/', views.descargar_ticket, name='descargar_ticket'),
     path('historial/', views.historial_publicaciones, name='historial_publicaciones'),
+
+    # Rutas de Mercado Pago
+    path('pago/exitoso/', views.pago_exitoso, name='pago_exitoso'),
+    path('pago/fallido/', views.pago_fallido, name='pago_fallido'),
+    path('pago/pendiente/', views.pago_pendiente, name='pago_pendiente'),
 ]
