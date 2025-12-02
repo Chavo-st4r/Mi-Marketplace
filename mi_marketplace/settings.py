@@ -25,14 +25,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'usuarios',
     'productos',
+
     'crispy_forms',
+
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+
     'rest_framework',
 ]
 
@@ -77,7 +81,7 @@ DATABASES = {
     }
 }
 
-# Validación de contraseñas
+# Validadores de contraseña
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -91,7 +95,7 @@ TIME_ZONE = 'America/Argentina/Buenos_Aires'
 USE_I18N = True
 USE_TZ = True
 
-# Archivos estáticos y media
+# Archivos estáticos
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -99,18 +103,18 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Redirecciones de login/logout
+# Redirecciones login
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = '/usuarios/login/'
 
-# Backends de autenticación (necesario para allauth)
+# Backends de autenticación
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# Orígenes confiables para CSRF (Render + local)
+# Orígenes confiables CSRF
 CSRF_TRUSTED_ORIGINS = [
     'https://mi-marketplace.onrender.com',
     'http://localhost:8000',
@@ -127,6 +131,30 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ]
 }
+
+# MercadoPago token
 MERCADOPAGO_ACCESS_TOKEN = 'APP_USR-3176187087180752-120116-f361ae4d76f1d23b5459c36ccd45e19c-471270508'
 
+# ====================================
+# CONFIGURACIÓN DE ALLAUTH
+# ====================================
+
+# Hace que Google vaya DIRECTO sin pantalla intermedia
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# Crea el usuario automáticamente sin mostrar pantalla intermedia
 SOCIALACCOUNT_AUTO_SIGNUP = True
+
+# Desactiva confirmación de email de Allauth
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_EMAIL_VERIFICATION = False
+
+# Config del proveedor Google (sin APP para evitar conflicto con SocialApp del admin)
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
