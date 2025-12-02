@@ -5,7 +5,8 @@
 
 {% block content %}
 <!-- Hero principal -->
-<section class="bg-dark text-white text-center py-5">
+<section class="hero-home">
+
     <div class="container">
         <h1 class="display-4 fw-bold">Compra y venta de ropa urbana</h1>
         <p class="lead">Explorá prendas únicas, publicá las tuyas y encontrá tu estilo.</p>
@@ -14,8 +15,14 @@
 </section>
 
 <!-- Sección de ofertas con carrusel -->
-<section class="container mt-5">
-    <h2 class="text-center mb-4">🔥 Ofertas destacadas</h2>
+<div class="ofertas-banner">
+  <h2 class="titulo-ofertas">
+    <img src="{% static 'img/fueguito.png' %}" alt="" style="height: 48px;">
+    Ofertas destacadas
+  </h2>
+</div>
+
+
     <div id="ofertasCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
             {% for producto in productos|slice:":6" %}
@@ -66,11 +73,12 @@
 </section>
 
 <!-- CTA final -->
-<section class="bg-light py-5 mt-5">
+<section class="cta-final mt-5">
     <div class="container text-center">
         <h3 class="mb-3">¿Tenés prendas para vender?</h3>
         <p>Publicá tu producto y empezá a vender hoy mismo.</p>
-        <a href="{% url 'publicar_producto' %}" class="btn btn-dark">Publicar prenda</a>
+        <a href="{% url 'publicar_producto' %}" class="btn btn-cta">Publicar prenda</a>
     </div>
 </section>
+
 {% endblock %}
