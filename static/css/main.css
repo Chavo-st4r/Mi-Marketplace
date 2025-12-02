@@ -1,10 +1,39 @@
-/* Tipografía moderna */
-body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f8f9fa;
-  color: #212529;
+/* Estructura base */
+html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
+  scroll-behavior: smooth;
+  font-family: 'Poppins', sans-serif;
+  color: #212529;
+  position: relative;
+}
+
+body {
+  background-image: url("/static/img/fondo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: -1;
+}
+
+/* Contenedor principal para mantener el footer abajo */
+.wrapper {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
 }
 
 /* Navbar */
@@ -32,6 +61,7 @@ footer {
   padding: 1rem 0;
   text-align: center;
   font-size: 0.9rem;
+  margin-top: auto;
 }
 
 /* Botones */
@@ -89,12 +119,13 @@ form p {
   margin-bottom: 1rem;
 }
 
-/* Tarjetas de producto */
+/* Tarjetas */
 .card {
   border: none;
   border-radius: 12px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.95);
 }
 
 .card:hover {
@@ -166,6 +197,23 @@ form p {
 
 .btn-google:hover {
   background-color: #f1f1f1;
+}
+
+/* Sección productos */
+.seccion-productos {
+  background-color: rgba(255, 255, 255, 0.92);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+}
+
+.filtros-productos {
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive */

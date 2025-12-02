@@ -3,12 +3,19 @@ Django settings for mi_marketplace project.
 """
 
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-c(l1_cvt+n4n-7&yyl9b+%#6-qr46#b4ho7l8v_ia*8+024oi5'
-DEBUG = False
-ALLOWED_HOSTS = ['*']
+DEBUG = True
+
+# Hosts permitidos: Render + localhost
+ALLOWED_HOSTS = [
+    'mi-marketplace.onrender.com',
+    'localhost',
+    '127.0.0.1'
+]
 
 # Apps instaladas
 INSTALLED_APPS = [
@@ -47,14 +54,13 @@ ROOT_URLCONF = 'mi_marketplace.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'mi_marketplace' / 'templates'],  # carpeta global de templates
+        'DIRS': [BASE_DIR / 'mi_marketplace' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # 👇 nuestro context processor del carrito
                 'productos.context_processors.carrito_context',
             ],
         },
@@ -87,8 +93,7 @@ USE_TZ = True
 
 # Archivos estáticos y media
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -96,7 +101,22 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Redirecciones de login/logout
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/usuarios/login/'
 
+# Backends de autenticación (necesario para allauth)
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Orígenes confiables para CSRF (Render + local)
+CSRF_TRUSTED_ORIGINS = [
+    'https://mi-marketplace.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000'
+]
+
+# DRF
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -106,4 +126,3 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ]
 }
-

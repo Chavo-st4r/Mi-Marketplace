@@ -1,39 +1,55 @@
 {% extends "base.html" %}
+{% block title %}Productos disponibles{% endblock %}
+
 {% block content %}
-<h2>Productos disponibles</h2>
+<div class="seccion-productos">
+  <h2 class="mb-4 text-center">🧥 Productos disponibles</h2>
 
-<!-- Formulario de filtros -->
-<form method="get" id="filtros" class="mb-4">
-  <input type="text" name="nombre" placeholder="Buscar por nombre">
-  <input type="text" name="categoria" placeholder="Categoría (ej: remera, pantalon)">
-  <input type="number" name="precio_min" placeholder="Precio mínimo">
-  <input type="number" name="precio_max" placeholder="Precio máximo">
-  <select name="orden">
-    <option value="">Ordenar por precio</option>
-    <option value="asc">Menor a mayor</option>
-    <option value="desc">Mayor a menor</option>
-  </select>
-  <button type="submit">Filtrar</button>
-</form>
-
-<hr>
-
-<!-- Listado de productos -->
-<div class="row">
-  {% for producto in productos %}
-    <div class="col-md-3 mb-4">
-      <div class="card">
-        <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
-        <div class="card-body">
-          <h5 class="card-title">{{ producto.nombre }}</h5>
-          <p class="card-text">${{ producto.precio }}</p>
-          <p class="card-text">Talle: {{ producto.talle }} | Color: {{ producto.color }}</p>
-          <a href="{% url 'agregar_al_carrito' producto.id %}" class="btn btn-primary">Agregar al carrito</a>
-        </div>
+  <!-- Formulario de filtros -->
+  <form method="get" id="filtros" class="filtros-productos mb-4">
+    <div class="row g-3">
+      <div class="col-md-3">
+        <input type="text" name="nombre" class="form-control" placeholder="🔍 Buscar por nombre">
+      </div>
+      <div class="col-md-2">
+        <input type="text" name="categoria" class="form-control" placeholder="Categoría (ej: remera)">
+      </div>
+      <div class="col-md-2">
+        <input type="number" name="precio_min" class="form-control" placeholder="Precio mínimo">
+      </div>
+      <div class="col-md-2">
+        <input type="number" name="precio_max" class="form-control" placeholder="Precio máximo">
+      </div>
+      <div class="col-md-2">
+        <select name="orden" class="form-select">
+          <option value="">Ordenar por precio</option>
+          <option value="asc">Menor a mayor</option>
+          <option value="desc">Mayor a menor</option>
+        </select>
+      </div>
+      <div class="col-md-1">
+        <button type="submit" class="btn btn-success w-100">Filtrar</button>
       </div>
     </div>
-  {% empty %}
-    <p>No se encontraron productos.</p>
-  {% endfor %}
+  </form>
+
+  <!-- Listado de productos -->
+  <div class="row">
+    {% for producto in productos %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ producto.nombre }}</h5>
+            <p class="card-text">${{ producto.precio }}</p>
+            <p class="card-text">Talle: {{ producto.talle }} | Color: {{ producto.color }}</p>
+            <a href="{% url 'agregar_al_carrito' producto.id %}" class="btn btn-primary w-100">Agregar al carrito</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted text-center">No se encontraron productos.</p>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}

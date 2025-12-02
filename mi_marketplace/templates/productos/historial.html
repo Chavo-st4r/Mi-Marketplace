@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Historial de publicaciones{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Tus publicaciones</h2>
+<div class="row">
+  {% for producto in publicaciones %}
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ producto.nombre }}</h5>
+          <p class="card-text">${{ producto.precio }}</p>
+          <p class="text-muted">Publicado por vos</p>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">No publicaste ninguna prenda aún.</p>
+  {% endfor %}
+</div>
+{% endblock %}

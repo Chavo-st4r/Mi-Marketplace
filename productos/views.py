@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from .models import Producto
 from .forms import ProductoForm
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.http import HttpResponse
+from django.utils.crypto import get_random_string
+from reportlab.pdfgen import canvas
+from io import BytesIO
 
 # Simulación básica de carrito en sesión
 @login_required
@@ -18,7 +20,61 @@ def agregar_al_carrito(request, producto_id):
 def ver_carrito(request):
     carrito_ids = request.session.get('carrito', [])
     productos = Producto.objects.filter(id__in=carrito_ids)
-    return render(request, 'productos/carrito.html', {'productos': productos})
+    numero_compra = request.session.pop('compra_exitosa', None)
+
+    return render(request, 'productos/carrito.html', {
+        'productos': productos,
+        'numero_compra': numero_compra
+    })
+
+@login_required
+def confirmar_compra(request):
+    carrito_ids = request.session.get('carrito', [])
+    productos = Producto.objects.filter(id__in=carrito_ids)
+
+    if request.method == 'POST':
+        numero_compra = get_random_string(length=8).upper()
+        direccion = request.POST.get('direccion')
+        metodo_pago = request.POST.get('metodo_pago')
+
+        # Limpiar carrito
+        request.session['carrito'] = []
+
+        # Generar PDF
+        buffer = BytesIO()
+        p = canvas.Canvas(buffer)
+        p.setFont("Helvetica", 12)
+        p.drawString(100, 800, f"Ticket de compra - Nº {numero_compra}")
+        p.drawString(100, 780, f"Dirección: {direccion}")
+        p.drawString(100, 760, f"Método de pago: {metodo_pago}")
+        y = 740
+        for producto in productos:
+            p.drawString(100, y, f"{producto.nombre} - ${producto.precio}")
+            y -= 20
+        p.drawString(100, y - 20, "Gracias por tu compra en Mi Marketplace.")
+        p.showPage()
+        p.save()
+        buffer.seek(0)
+
+        # Guardar PDF en sesión como hex para descarga
+        request.session['ticket_pdf'] = buffer.getvalue().hex()
+        request.session['compra_exitosa'] = numero_compra
+
+        return redirect('ver_carrito')
+
+    return redirect('ver_carrito')
+
+@login_required
+def descargar_ticket(request):
+    hex_data = request.session.get('ticket_pdf')
+    if not hex_data:
+        return redirect('productos')
+
+    buffer = BytesIO(bytes.fromhex(hex_data))
+    numero = request.session.get('compra_exitosa', 'compra')
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename=ticket_{numero}.pdf'
+    return response
 
 def home(request):
     return render(request, 'home.html')
@@ -65,6 +121,7 @@ def productos_view(request):
         'carrito_productos': carrito_productos,
     })
 
+@login_required
 def publicar_producto(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES)
@@ -76,3 +133,10 @@ def publicar_producto(request):
     else:
         form = ProductoForm()
     return render(request, 'productos/publicar_producto.html', {'form': form})
+
+@login_required
+def historial_publicaciones(request):
+    publicaciones = Producto.objects.filter(vendedor=request.user).order_by('-id')
+    return render(request, 'productos/historial.html', {
+        'publicaciones': publicaciones
+    })
